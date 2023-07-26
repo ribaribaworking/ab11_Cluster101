@@ -1,0 +1,32 @@
+---
+title: "CCRI cluster user guide"
+author: "Bioinformatics Core Unit"
+date: '2023-07-26'
+output: 
+  html_document: 
+    toc: true
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    theme: yeti
+---
+
+## What this tutorial is about
+
+Hi dear scientist! We are glad to see that you decided to go on the road of an adventure of computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
+
+We believe that standardization of work processes is good for
+
+Here, in the next hour, you will learn how to keep your data organized and structured, so if you accidentally die, you colleagues could continue working on your project without any delays.
+
+So, you want to connect to the cluster, to run Rstrudio, or analyze your NGS data, how do you do that? Let's set up your machine.
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
