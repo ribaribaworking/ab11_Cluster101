@@ -65,11 +65,13 @@ Second, we will deactivate *TypeScript and JavaScript Language Features Support.
 
 -   *Extensions \> \@builtin TypeScript and JavaScript \> Disable \> Reload*
 
-![](data/gifs/vsc_setup.gif)
+    ![](data/gifs/vsc_setup.gif)
 
 Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. Also, before connecting to the server, make sure that you have your account set up and Isilon storage mounted. To do that, contact BICU, we will help you. Ok, now you are ready to connect to the cluster. Follow these simple steps:
 
--   Click "*\>\<"* symbol in the left lower corner \> *Connect to Host* \> *+ Add New SSH Host...*
+-   Click "*\>\<"* symbol in the left lower corner \> *Connect to Host* \> *+ Add New SSH Host...* Or select one that you have set up already.
+
+-   Select the location where you want to store the config (the default is fine)
 
 -   Then type in "ssh your_user_name\@machine_ip", where you_user_name is the name that you got from us and IP addresses:
 
@@ -80,9 +82,9 @@ Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. A
     | Biohazard    | 011SV157.AD.CCRI.AT | 10.5.1.157 |
     | Biowaste     | 011SV154.AD.CCRI.AT | 10.5.1.154 |
 
--   Enter your password (if it's the first time you log in to your account, then you have a generic password that you **must** change asap)
+-   Enter your password (if it's the first time you log in to your account, then you have a generic password that you **must** change asap) and hit enter. You might be asked if you trust the connection, or if you want to
 
--   ADD MORE STEPS HERE
+    ![](data/gifs/remote_ssh.gif)
 
 It doesn't look like much happened, but you are on the server. Now, let's go to the next step and learn some basic Linux commands.
 
@@ -93,30 +95,75 @@ Our server is a Linux machine and working with it involves a terminal and using 
 1.  First, let's check where we are now, by typing `pwd`The output will look like this:\
     `/home/test_user`Where `/` is a root directory, `/home` is the folder where folders of all users are stored, and `/you_user_name` - is your home folder.
 
-2.  Now, let's check what we have in our folder by typing `ls`Now we don't have much in our folder, but you should have Isilon storage mounted, so you should see it in the output:\
-    `bioinf_isilon`Let's try to see what is inside this folder by typing:\
-    `ls bioinf_isilon/`We will see several folders:\
+2.  Now, let's check what we have in our folder by typing `ls` Now we don't have much in our folder, but you should have Isilon storage mounted, so you should see it in the output:\
+    `bioinf_isilon`
+
+3.  But this is not everything, there are also hidden files. If you want to see them, try:\
+    `ls -a`\
+    you will see a bunch of files like these: *.bashrc, .profile, .bash_logout,* etc. Files starting with a dot are hidden by default.
+
+4.  When you will have a lot of files, it becomes more practical to visualize them as a list. To do that use\
+    `ls -lh`\
+    `-l` stands for "list" and `-h` for *"Human-readable"*, so the size of the files is depicted as Mb, Gb, Kb, which is easier to read.
+
+5.  Ok, now we can peek at what we have in the bioinf_isilon directory:\
+    `ls bioinf_isilon/`\
+    We will see several folders:\
     `core_bioinformatics_unit  Labdia  _OLD-TEST  Research  zArchive  zClipboard  zrawdata`
 
-3.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group: `cd bioing_isilon/Research/YOUR_GROUP/Public`
+6.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group, or anywhere really: \
+    `cd bioing_isilon/Research/YOUR_GROUP/Public`
 
-    If you want to move to a folder above, you can use `cd ../` If you want to move to a previous location use `cd -`\
-    One important thing to remember is that Linux, in comparison to Windows, is case-sensitive, so `Research`, `research`, `RESEARCH` and `ReSeArCh` are all different names.
+7.  If you want to move to a folder above, you can use `cd ../` \
+    To a previous location use `cd -` \
+    To come back to your home directory please just type `cd ~`\
+    One important thing to remember is that in comparison to Windows, Linux is case-sensitive, so `Research`, `research`, `RESEARCH` and `ReSeArCh` are all different names.
+
+    ![](data/gifs/lscd.gif)
 
 Great! Now we are able to move around and see what we have in different directories. Now let's try to create files, and directories, rename, copy, cut, and delete them.
 
-4.  Ok, assuming that you are in your group directory, let's create a new folder, using this command:
+4.  Ok, assuming that you are in your home directory, let's create a new folder, using this command:
 
     `mkdir test_folder`\
-    Check that the folder is there, with `ls`One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.\
+    Check that the folder is there, with `ls`One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.
 
 5.  It's also possible to create several folders inside one another. This, you need to use the parameter `-p` Let's do it and move there\
-    `mkdir -p test_folder/another_test_folder/just_one_morecd test_folder/another_test_folder/just_one_more`
+    `mkdir -p test_folder/another_test/just_one_more`\
+    `cd test_folder/another_test/just_one_more`
 
 6.  Atm, it feels a bit empty, so let's create a file inside. You can do it in several ways, for example, you can use this command:\
-    `touch my_new_amazing_file.txt`
+    `touch file.txt`
 
     FYI it's also possible to do it using GUI in the VS Code. To do that, click in the left panel *Explorer \> Open Folder \> Ok.* You will see a tree of files and buttons "Create file", "Create Folder" and "Refresh".
 
-7.  When you created the file, let's write something inside. There are countless ways to do that, but assuming you have the "*Explorer*" open, find the file, open it, and write something inside.*\
-    *\
+7.  When you created the file, let's write something inside. There are countless ways to do that, but assuming you have the "*Explorer*" open, find the file, open it, and write something inside.\
+    ![](data/gifs/mkdir_touch.gif)
+
+8.  To observe the content of a file we typically use the following commands:\
+    `less file.txt` - allows look at the whole file. Navigation by arrows, and space bar. To exit press `q`*\
+    *`head file.txt` - allows looking at the first 10, or n rows\
+    `tail file.txt` - the same, but for the last rows
+
+9.  Now, let's try to copy files using:\
+    `cp file.txt ../`\
+    we specify first what we want to copy, then the destination. If you want to change the original name of the file, just specify the new name at the end:\
+    `cp file.txt ../file_copy.txt` \
+    \
+    Moving and renaming works very similarly - use:\
+    `mv ../file_copy.txt ../file_with_new_name.txt`
+
+10. Now, let's try to remove the file:\
+    `rm file.txt`\
+    \
+    **Important note** - rm removes the file permanently. There is no such a thing as "trash bin". So, be very careful with what you are removing.
+
+11. Now let's try to remove the folder that we created. First move to the home directory. Then, we need to use `-r` parameter:\
+    \
+    `rm -r test_folder`
+
+    ![](data/gifs/less_rm.gif)
+
+So, now we know how to create files and folders, rename them, copy and delete. Also, remember that you can do it in the GUI, but sometimes it can be easier to do with CLI. In principle, these are the most commonly used commands that you really need to remember. There are also others that you could find in [the cheat sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/).
+
+## Managing your environments with Conda 
