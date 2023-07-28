@@ -11,22 +11,112 @@ output:
     theme: yeti
 ---
 
-## What this tutorial is about
+# What this tutorial is about
 
-Hi dear scientist! We are glad to see that you decided to go on the road of an adventure of computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
+#draft - rewrite it later
 
-We believe that standardization of work processes is good for
+Hi dear scientist! We are glad to see that you decided to go on the road to an adventure in computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
 
-Here, in the next hour, you will learn how to keep your data organized and structured, so if you accidentally die, you colleagues could continue working on your project without any delays.
+We believe that standardization of work processes is good for reproducibility in data science and make it much easier to collaborate on projects.
 
-So, you want to connect to the cluster, to run Rstrudio, or analyze your NGS data, how do you do that? Let's set up your machine.
+Here, in the next hour, you will learn how to keep your data organized and structured, so if you accidentally die, your colleagues could continue working on your project without any delays.
 
-## Including Plots
+So, you want to connect to the cluster to run RStrudio, or process your NGS data, how do you do that? Let's set up your machine first.
 
-You can also embed plots, for example:
+# Essentials
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+Here we will cover the very basic topics such as setting up the IDE, connecting to a server, basic Linux commands, and some tips on how to keep your project organized.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Setting up the machine.
+
+![](data/images/000_terminals_alternatives.png){width="678"}
+
+There are different ways to access and work on an HPC cluster. For instance, macOS users have pre-installed Terminal on their systems. Another very popular solution - iTerm2. For Windows users, there are Windows Terminal or mobaXterm. But luckily it doesn't matter so much whether you have Windows or Mac, we recommend using VS Code, as a most simple and reliable tool.
+
+The first step - [download the VS C](https://code.visualstudio.com/)ode, install, and run it. It will look something like this:
+
+![](data/images/001_vscode_starting_screen.png){width="693"}
+
+On the left panel you can see several tabs:
+
+-   Explorer - allows you to navigate in your working space, and observe files and folders
+
+-   Search - search in documents
+
+-   Source control - gives you control over a git repository. We will cover that later
+
+-   Run And Debug - gives you the possibility to use automated debugging. We don't need it for now
+
+-   Extensions - the main beauty of VS Code. Allows to install different modules that extend the capabilities of the IDE
+
+-   Profile - allows you to connect your GitHub account and synchronize settings across different devices
+
+-   Settings - settings and more ;)
+
+If VS Code is new to you, we recommend having a look at the guides that VS Code offers to check: "Get Started with VS Code" and "Learn the Fundamentals". Also, the [official guides from Microsoft](https://code.visualstudio.com/docs/introvideos/basics) are really good.
+
+Before we begin, we need to do a couple of adjustments to the VS Code, so that it works well with a cluster. This is **important**, please **don't skip** this step.
+
+First, we will deactivate FileWatcher - this is a plugin that is constantly checking if files are changed in an open directory. This is convenient, but if you work in a folder that has many files it can load a CPU heavily. To do this follow these steps:
+
+-   *Settings* \> *FileWatcher* \> *Add Pattern* \> add "\*"
+
+Second, we will deactivate *TypeScript and JavaScript Language Features Support.* Sometimes it can load a CPU as well. Do the following steps:
+
+-   *Extensions \> \@builtin TypeScript and JavaScript \> Disable \> Reload*
+
+![](data/gifs/vsc_setup.gif)
+
+Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. Also, before connecting to the server, make sure that you have your account set up and Isilon storage mounted. To do that, contact BICU, we will help you. Ok, now you are ready to connect to the cluster. Follow these simple steps:
+
+-   Click "*\>\<"* symbol in the left lower corner \> *Connect to Host* \> *+ Add New SSH Host...*
+
+-   Then type in "ssh your_user_name\@machine_ip", where you_user_name is the name that you got from us and IP addresses:
+
+    |              |                     |            |
+    |--------------|---------------------|------------|
+    | Machine Name | Machine Linux Name  | IP address |
+    | Biodirt      | 011SV155.AD.CCRI.AT | 10.5.1.155 |
+    | Biohazard    | 011SV157.AD.CCRI.AT | 10.5.1.157 |
+    | Biowaste     | 011SV154.AD.CCRI.AT | 10.5.1.154 |
+
+-   Enter your password (if it's the first time you log in to your account, then you have a generic password that you **must** change asap)
+
+-   ADD MORE STEPS HERE
+
+It doesn't look like much happened, but you are on the server. Now, let's go to the next step and learn some basic Linux commands.
+
+## Linux commands 101
+
+Our server is a Linux machine and working with it involves a terminal and using Bash scripting language. If you have experience with Unix systems, feel free to skip this section, as it involves very basic concepts. If you never worked with it before, in the beginning, the terminal can seem to be overwhelming and feels awkward, but you will get used to it and soon will see how fast and easy you can make many things using bash. Now, let's learn basic commands that are absolutely essential. To start using the terminal press *Ctrl+Shift+\`* or *Terminal \> New Terminal* in the menu upper bar.
+
+1.  First, let's check where we are now, by typing `pwd`The output will look like this:\
+    `/home/test_user`Where `/` is a root directory, `/home` is the folder where folders of all users are stored, and `/you_user_name` - is your home folder.
+
+2.  Now, let's check what we have in our folder by typing `ls`Now we don't have much in our folder, but you should have Isilon storage mounted, so you should see it in the output:\
+    `bioinf_isilon`Let's try to see what is inside this folder by typing:\
+    `ls bioinf_isilon/`We will see several folders:\
+    `core_bioinformatics_unit  Labdia  _OLD-TEST  Research  zArchive  zClipboard  zrawdata`
+
+3.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group: `cd bioing_isilon/Research/YOUR_GROUP/Public`
+
+    If you want to move to a folder above, you can use `cd ../` If you want to move to a previous location use `cd -`\
+    One important thing to remember is that Linux, in comparison to Windows, is case-sensitive, so `Research`, `research`, `RESEARCH` and `ReSeArCh` are all different names.
+
+Great! Now we are able to move around and see what we have in different directories. Now let's try to create files, and directories, rename, copy, cut, and delete them.
+
+4.  Ok, assuming that you are in your group directory, let's create a new folder, using this command:
+
+    `mkdir test_folder`\
+    Check that the folder is there, with `ls`One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.\
+
+5.  It's also possible to create several folders inside one another. This, you need to use the parameter `-p` Let's do it and move there\
+    `mkdir -p test_folder/another_test_folder/just_one_morecd test_folder/another_test_folder/just_one_more`
+
+6.  Atm, it feels a bit empty, so let's create a file inside. You can do it in several ways, for example, you can use this command:\
+    `touch my_new_amazing_file.txt`
+
+    FYI it's also possible to do it using GUI in the VS Code. To do that, click in the left panel *Explorer \> Open Folder \> Ok.* You will see a tree of files and buttons "Create file", "Create Folder" and "Refresh".
+
+7.  When you created the file, let's write something inside. There are countless ways to do that, but assuming you have the "*Explorer*" open, find the file, open it, and write something inside.*\
+    *\
