@@ -33,7 +33,7 @@ Here we will cover the very basic topics such as setting up the IDE, connecting 
 
 There are different ways to access and work on an HPC cluster. For instance, macOS users have pre-installed Terminal on their systems. Another very popular solution - iTerm2. For Windows users, there are Windows Terminal or mobaXterm. But luckily it doesn't matter so much whether you have Windows or Mac, we recommend using VS Code, as a most simple and reliable tool.
 
-The first step - [download the VS C](https://code.visualstudio.com/)ode, install, and run it. It will look something like this:
+The first step - [download the VS C](https://code.visualstudio.com/)ode, install, and run it. It will look something like this
 
 ![](data/images/001_vscode_starting_screen.png){width="693"}
 
@@ -41,7 +41,7 @@ On the left panel you can see several tabs:
 
 -   Explorer - allows you to navigate in your working space, and observe files and folders
 
--   Search - search in documents
+-   Search - Search in documents
 
 -   Source control - gives you control over a git repository. We will cover that later
 
@@ -111,11 +111,11 @@ Our server is a Linux machine and working with it involves a terminal and using 
     We will see several folders:\
     `core_bioinformatics_unit  Labdia  _OLD-TEST  Research  zArchive  zClipboard  zrawdata`
 
-6.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group, or anywhere really: \
+6.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group, or anywhere really:\
     `cd bioing_isilon/Research/YOUR_GROUP/Public`
 
-7.  If you want to move to a folder above, you can use `cd ../` \
-    To a previous location use `cd -` \
+7.  If you want to move to a folder above, you can use `cd ../`\
+    To a previous location use `cd -`\
     To come back to your home directory please just type `cd ~`\
     One important thing to remember is that in comparison to Windows, Linux is case-sensitive, so `Research`, `research`, `RESEARCH` and `ReSeArCh` are all different names.
 
@@ -148,13 +148,12 @@ Great! Now we are able to move around and see what we have in different director
 9.  Now, let's try to copy files using:\
     `cp file.txt ../`\
     we specify first what we want to copy, then the destination. If you want to change the original name of the file, just specify the new name at the end:\
-    `cp file.txt ../file_copy.txt` \
+    `cp file.txt ../file_copy.txt`\
     \
     Moving and renaming works very similarly - use:\
     `mv ../file_copy.txt ../file_with_new_name.txt`
 
-10. Now, let's try to remove the file:\
-    `rm file.txt`\
+10. Now, let's try to remove the [[file:\\\\](file:){.uri}](%5Bfile:%5D(file:)%7B.uri%7D){.uri} `rm file.txt`\
     \
     **Important note** - rm removes the file permanently. There is no such a thing as "trash bin". So, be very careful with what you are removing.
 
@@ -166,4 +165,105 @@ Great! Now we are able to move around and see what we have in different director
 
 So, now we know how to create files and folders, rename them, copy and delete. Also, remember that you can do it in the GUI, but sometimes it can be easier to do with CLI. In principle, these are the most commonly used commands that you really need to remember. There are also others that you could find in [the cheat sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/).
 
-## Managing your environments with Conda 
+There are also several nice tutorials some of which are here:\
+[Link #1](https://rnabio.org/module-00-setup/0000/08/01/Unix/)
+
+## Managing your environments with Conda
+
+One of the most important practices in bioinformatics work (probably in a wet lab it's even more important) is making your work easily reproducible. So, it's crucial to know what packages and what versions of them you are using, and properly record this information. And as many packages might have many dependencies, proper management of it is crucial, so that your project would not turn into a spaghetti monster.
+
+There are different solutions out there and one of the most popular ones is [Conda](https://docs.conda.io/en/latest/) package manager, or its sister [Mamba](https://mamba.readthedocs.io/en/latest/#). They allow you to install packages of specific versions and easily create virtual environments for a project when you need them. To install Mamaba use this line of code while being in your home directory.
+
+`wget "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"`
+
+`bash Mambaforge-$(uname)-$(uname -m).sh`
+
+![](data/gifs/install_mamba.gif)
+
+Don't forget to reload the terminal, so that mamba gets activated.
+
+After installation, you have a very convenient way to control what to install and how. Now you are in your default (base) environment - it's a good idea to store here the tools that you are going to use on a daily basis. And for specific projects, it makes sense sometimes to create separate environments. You will see how it works in the following sections of the tutorial. But first, we will install a couple of packages that are absolute must-haves.
+
+First, let's install tmux. This is a terminal multiplexer that allows you to create different sessions, that you can switch between easily and that will run your commands even when you get disconnected from a cluster. To do that, use this simple line of code:
+
+`mamba install tmux`
+
+When the installation is complete, type in `tmux` in the terminal to start a session. Now you can see that not many things changed at first glance, but in reality, now we have a separate tmux process running and if we start some pipeline that will take let's say 5 hours to complete it won't crush if we get disconnected from the server. Also, we can create easily switch windows, and tabs just like in a normal web browser.
+
+For instance, we can split the window into two panes. But first, a small note about the controls in tmux. All commands in tmux are triggered by a **prefix key** followed by a **command key**. By default, tmux uses `Ctrl+b` as a prefix key (often labeled as `C-b`). It can feel weird at the beginning, but you will get used to it very fast.
+
+So, if you want to split the screen into left and right, press `Ctrl+b`, release, then press `%`. To switch between them use `C-b <arrow key>`. Great! So, this is very convenient when you want to have several terminals open, but want it to be nicely organized. Now let's see the true beauty of the tmux.
+
+Let's run a very simple code that will just show us the date and time every 3 seconds until we stop it:\
+`while true; do 'date'; sleep 3; done`
+
+Now, if we detach from the current tmux session using `C-b d` We went to just a regular terminal, let's connect to the running session. To do that, we need to know the name of the session. let's check it with:\
+`tmux ls`\
+You should see only one session with the name "0". To connect to it use:\
+`tmux a -t 0`
+
+And boom, you are back! And you can notice that the session was active - there are more dates printed (to stop the running process press `Ctrl+C)`. So, it might not seem like something extraordinary, but by default normal terminals stop processes associated with them when ssh tunnel is closed. So, if you started your precious script, went to make a coffee and your computer went to sleep in the meantime, the ssh tunnel breaks and your script gets stopped. So, tmux creates constantly running processes. Also, if you work on several projects it is very practical to have separate sessions, for each individual project. It helps to keep everything organized.
+
+And before we go to the next section, here are more handy commands:\
+`C-b x` - close the current pane\
+`C-b "` - horizontal split\
+`C-b w` - show all windows
+
+Also, here you can find some really good tutorials if you want to deep dive into the tmux:
+
+-   [A Short and simple introduction](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+
+-   [How to customize tmux](https://www.hamvocke.com/blog/a-guide-to-customizing-your-tmux-conf/?__proto__.e32a5ec9c99=ddcb362f1d60)
+
+-   [Cheat Sheet](https://tmuxcheatsheet.com/)
+
+So, now we are fully prepared for creating our first project and see what is the best way to keep the work organized and trackable.
+
+## Creating a project
+
+Now we can simulate a typical project and show what could be a convenient way to organize your workflow. In this particular example, we will try to analyze RNA-seq data. You will see how to organize folder structure in a convenient way, and how to manage big data versions and your code. You will see how the usage of the Conda environment can be beneficial and we will show how how to share this information with your potential collaborators. Also, you will see how to run RStudio in a container.
+
+### Folder structure setup
+
+First, we need to create a folder where we will locate the project. We would suggest you to create a folder in your research group folder if you still don't have one. It makes life much easier for your colleagues if they deice to pick up your project when you leave, or re-analyze some data after a long time. A typical path would look like this:
+
+`/home/USER/bioinf_isilion/Research/GROUP/USER/projects/ID000_YYYYMM_ProjectName`
+
+The name of the project folder would contain the following info:\
+`ID000` - your ID (for example I use AB as an acronym of my name and surname), followed by a number in the format `001, 002, …` It's quite convenient to give each project a unique index so that it would be easier for you to search it. \
+`YYYYMM` - date in the format YEAR, month. The year goes first, because when folders arranged by year first, it becomes easy to sort them.\
+`ProjectName` - just a short description of what this project is, eg. Neuroblastoma_RNAseq
+
+A typical directories structure would look like this:\
+`ID000_YYYYMM_ProjectName/                  ├─ RProject/                              - folder where you will store your Rproject│  ├─ Results/                            - Results that you will produce with R code │  ├─ Misc/                               - maybe you have some important metadata for R ├─ Data_Raw/                              - Here it's either RAW data, or a symlink to it │  ├─ 01_Sample/                           │  ├─ 02_Sample/                           ├─ Data_processed/                         - In some cases you can produce intermediate files├─ Src/                                   - You scripts for data processing │  ├─ 01_DataProcessingScript.sh           │  ├─ 02_AnotherDataProcessingStep.sh      ├─ Misc/                                  - Additional data, eg. references, metadata, etc.├─ .gitignore                             - part of your git repo├─ README.md                              - it's nice to have a short description of a project`
+
+Of course, it's not a strict rule that you always must have such a structure. No. It's just an idea of how it might look like. Just keep it clean and self-explanatory, or add a very good description of what is what. Make your, or a colleague's life who will use your code after you easier.
+
+### Loading the data
+
+So, move to a directory of your group and try to create a project folder, and inside `Data_Raw`, `Src` and `Misc` folders. When this is done, let's pull a test dataset. For this, move to `Src` and create a file `00_DataLoader.sh` We will work with an example dataset - RNA-seq data from human. \
+Open the created file and write there this code:
+
+`#!/bin/bash`
+
+`wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar -O ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar`
+
+`tar -xvf ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar -C ../Data_Raw/`
+
+`rm ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar`
+
+Save the file, and execute it from the `Src` folder with:
+
+`bash ./00_DataLoader.sh`
+
+Great! If everything went well, then you should have a Data_Raw folder with 12 fastq files.
+
+	
+
+	2) Now, when we created the structure and populated our folder it's a good time to give some basic ideas how to keep track of changes that you make to your code, data and so on.
+
+We will use 2 packages for this - git and dvc. Try to install them using mamba. They are general use packages, so we will install it to our base environment. The command should look like this:
+
+mamba install git dvc
+
+when the installation is complete.
