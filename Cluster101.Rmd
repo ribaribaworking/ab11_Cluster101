@@ -19,9 +19,9 @@ Hi dear scientist! We are glad to see that you decided to go on the road to an a
 
 We believe that standardization of work processes is good for reproducibility in data science and make it much easier to collaborate on projects.
 
-Here, in the next hour, you will learn how to keep your data organized and structured, so if you accidentally die, your colleagues could continue working on your project without any delays.
+Here, in the next hour or two, you will learn how to keep your data organized and structured, so that if you leave, your colleagues could continue working on your project without any delays. We believe that the best way to learn it is actually just to try to do it. That is why this tutorial is designed in a way, that you do a small project - RNA-seq analysis. Even if you are not particularly interested in this specific type of data, it serves as a good example and we can demonstrate different aspects of data and environment management, organization of work, and so on. At the same time, we try to split the whole process into independent sections, one covering one particular aspect of the work so that it would be easier to search for a particular piece of information.
 
-So, you want to connect to the cluster to run RStrudio, or process your NGS data, how do you do that? Let's set up your machine first.
+So, you want to connect to the cluster to run RStudio, or process your NGS data, how do you do that? Let's set up your machine first.
 
 # Essentials
 
@@ -75,9 +75,8 @@ Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. A
 
 -   Then type in "ssh your_user_name\@machine_ip", where you_user_name is the name that you got from us and IP addresses:
 
-    |              |                     |            |
-    |--------------|---------------------|------------|
     | Machine Name | Machine Linux Name  | IP address |
+    |--------------|---------------------|------------|
     | Biodirt      | 011SV155.AD.CCRI.AT | 10.5.1.155 |
     | Biohazard    | 011SV157.AD.CCRI.AT | 10.5.1.157 |
     | Biowaste     | 011SV154.AD.CCRI.AT | 10.5.1.154 |
@@ -86,14 +85,19 @@ Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. A
 
     ![](data/gifs/remote_ssh.gif)
 
-It doesn't look like much happened, but you are on the server. Now, let's go to the next step and learn some basic Linux commands.
+It doesn't look like much happened, but you are on the server. Now, let's go to the next step and have an overview of the structure of our cluster infrastructure and learn some basic Linux commands.
+
+## Cluster structure
+
+We have 4 different machines, available for common usage. \
+DESCRIBE HERE the structure and recommendations on where to store what. Give guidelines about Raw data storage, Scratch and so on.
 
 ## Linux commands 101
 
 Our server is a Linux machine and working with it involves a terminal and using Bash scripting language. If you have experience with Unix systems, feel free to skip this section, as it involves very basic concepts. If you never worked with it before, in the beginning, the terminal can seem to be overwhelming and feels awkward, but you will get used to it and soon will see how fast and easy you can make many things using bash. Now, let's learn basic commands that are absolutely essential. To start using the terminal press *Ctrl+Shift+\`* or *Terminal \> New Terminal* in the menu upper bar.
 
 1.  First, let's check where we are now, by typing `pwd`The output will look like this:\
-    `/home/test_user`Where `/` is a root directory, `/home` is the folder where folders of all users are stored, and `/you_user_name` - is your home folder.
+    `/home/test_user` Where `/` is a root directory, `/home` is the folder where folders of all users are stored, and `/you_user_name` - is your home folder.
 
 2.  Now, let's check what we have in our folder by typing `ls` Now we don't have much in our folder, but you should have Isilon storage mounted, so you should see it in the output:\
     `bioinf_isilon`
@@ -126,7 +130,7 @@ Great! Now we are able to move around and see what we have in different director
 4.  Ok, assuming that you are in your home directory, let's create a new folder, using this command:
 
     `mkdir test_folder`\
-    Check that the folder is there, with `ls`One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.
+    Check that the folder is there, with `ls` One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.
 
 5.  It's also possible to create several folders inside one another. This, you need to use the parameter `-p` Let's do it and move there\
     `mkdir -p test_folder/another_test/just_one_more`\
@@ -188,7 +192,7 @@ First, let's install tmux. This is a terminal multiplexer that allows you to cre
 
 `mamba install tmux`
 
-When the installation is complete, type in `tmux` in the terminal to start a session. Now you can see that not many things changed at first glance, but in reality, now we have a separate tmux process running and if we start some pipeline that will take let's say 5 hours to complete it won't crush if we get disconnected from the server. Also, we can create easily switch windows, and tabs just like in a normal web browser.
+When the installation is complete, type in `tmux` in the terminal to start a session. Now you can see that not many things changed at first glance, but in reality, now we have a separate tmux process running and if we start some pipeline that will take let's say 5 hours to complete it won't crush if we get disconnected from the server. Also, we can easily create, switch windows and tabs just like in a normal web browser.
 
 For instance, we can split the window into two panes. But first, a small note about the controls in tmux. All commands in tmux are triggered by a **prefix key** followed by a **command key**. By default, tmux uses `Ctrl+b` as a prefix key (often labeled as `C-b`). It can feel weird at the beginning, but you will get used to it very fast.
 
@@ -229,19 +233,44 @@ First, we need to create a folder where we will locate the project. We would sug
 
 `/home/USER/bioinf_isilion/Research/GROUP/USER/projects/ID000_YYYYMM_ProjectName`
 
-The name of the project folder would contain the following info:\
-`ID000` - your ID (for example I use AB as an acronym of my name and surname), followed by a number in the format `001, 002, …` It's quite convenient to give each project a unique index so that it would be easier for you to search it. \
-`YYYYMM` - date in the format YEAR, month. The year goes first, because when folders arranged by year first, it becomes easy to sort them.\
+The name of the project folder would contain the following information `ID000` - your ID (for example I use AB as an acronym of my name and surname), followed by a number in the format `001, 002, …` It's quite convenient to give each project a unique index so that it would be easier for you to search it.\
+`YYYYMM` - date in the format YEAR, month. The year goes first because when folders are arranged by year first, it becomes easy to sort them.\
 `ProjectName` - just a short description of what this project is, eg. Neuroblastoma_RNAseq
 
 A typical directories structure would look like this:\
-`ID000_YYYYMM_ProjectName/                  ├─ RProject/                              - folder where you will store your Rproject│  ├─ Results/                            - Results that you will produce with R code │  ├─ Misc/                               - maybe you have some important metadata for R ├─ Data_Raw/                              - Here it's either RAW data, or a symlink to it │  ├─ 01_Sample/                           │  ├─ 02_Sample/                           ├─ Data_processed/                         - In some cases you can produce intermediate files├─ Src/                                   - You scripts for data processing │  ├─ 01_DataProcessingScript.sh           │  ├─ 02_AnotherDataProcessingStep.sh      ├─ Misc/                                  - Additional data, eg. references, metadata, etc.├─ .gitignore                             - part of your git repo├─ README.md                              - it's nice to have a short description of a project`
+`ID000_YYYYMM_ProjectName/`
+
+`├─ RProject/                              - folder where you will store your Rproject`
+
+`│  ├─ Results/                            - Results that you will produce with R code`
+
+`│  ├─ Misc/                               - maybe you have some important metadata for R`
+
+`├─ Data_Raw/                              - Here it's either RAW data, or a symlink to it`
+
+`│  ├─ 01_Sample/`
+
+`│  ├─ 02_Sample/`
+
+`├─ Data_processed/                         - In some cases you can produce intermediate files`
+
+`├─ Src/                                   - You scripts for data processing`
+
+`│  ├─ 01_DataProcessingScript.sh`
+
+`│  ├─ 02_AnotherDataProcessingStep.sh`
+
+`├─ Misc/                                  - Additional data, eg. references, metadata, etc.`
+
+`├─ .gitignore                             - part of your git repo`
+
+`├─ README.md                              - it's nice to have a short description of a project`
 
 Of course, it's not a strict rule that you always must have such a structure. No. It's just an idea of how it might look like. Just keep it clean and self-explanatory, or add a very good description of what is what. Make your, or a colleague's life who will use your code after you easier.
 
 ### Loading the data
 
-So, move to a directory of your group and try to create a project folder, and inside `Data_Raw`, `Src` and `Misc` folders. When this is done, let's pull a test dataset. For this, move to `Src` and create a file `00_DataLoader.sh` We will work with an example dataset - RNA-seq data from human. \
+So, move to a directory of your group and try to create a project folder, and inside `Data_Raw`, `Src` and `Misc` folders. When this is done, let's pull a test dataset. For this, move to `Src` and create a file `00_DataLoader.sh` We will work with an example dataset - RNA-seq data from human.\
 Open the created file and write there this code:
 
 `#!/bin/bash`
@@ -258,12 +287,60 @@ Save the file, and execute it from the `Src` folder with:
 
 Great! If everything went well, then you should have a Data_Raw folder with 12 fastq files.
 
-	
+### Version control Git and DVC
 
-	2) Now, when we created the structure and populated our folder it's a good time to give some basic ideas how to keep track of changes that you make to your code, data and so on.
+Now, when we created the structure and populated our folder it's a good time to give some basic ideas on how to keep track of changes that you make to your code, data, and so on. We will use 2 packages for this - git and dvc. Try to install them using mamba. They are general-use packages, so we will install them in our base environment. The command should look like this:
 
-We will use 2 packages for this - git and dvc. Try to install them using mamba. They are general use packages, so we will install it to our base environment. The command should look like this:
+`mamba install git dvc`
 
-mamba install git dvc
+Git is an open-source system that allows users to easily control the changes that happen to the code and see the history of these changes. It's very widely used and we highly encourage you to implement it in your workflow. If you want to make changes to your code, you don't want to create a backup every single time - it consumes a lot of hard drive space and becomes cumbersome to know what exactly you did and when. So, Git allows you to create different branches, switch between them, merge them, and easily "go back in time" to see what changes were made to the code, when, and by whom.
 
-when the installation is complete.
+Another system that we are going to use is DVC - this is very similar to Git, but it is designed specifically for large data because Git can have a hard time sometimes keeping track of changes to several TB of NGS data that you might have. In this tutorial, we are going to cover only the very basics, but if you are interested, you are more than welcome to explore other tutorials.
+
+So, we will start with initializing out git repository. make sure that you are located in `…/ID000_YYYYMM_ProjectName/` and then type in the following command:
+
+`git init`
+
+So, you created a git repository! You can see that you have a new hidden folder .git which will contain information about changes that you do to your files in this folder. It's not done automatically, so you need to do it manually, but first, let's create a file where we will specify what folders and files we don't want to track. Create a file `.gitignore` and populate it with the following:
+
+`Data_Raw`
+
+`*.fastq`
+
+So, we just specify in this file what should be ignored by Git. We specifically want to ignore raw data, because we will track it with DVC. Actually, DVC does it automatically, but we would like to demonstrate how to use this functionality. And to initialize DVC tracking, you need to do similar steps:
+
+`dvc init`
+
+And then:
+
+`dvc add Data_Raw`
+
+This will create a `Data_Raw.dvc` file, that is specifically linked to this folder, so that Git will track not the raw, big files themselves, but a small file, linked to this folder.
+
+You may ask - "It looks quite complicated! Why do we need to use DVC? Isn't Git just enough?" Well. if theory, you can use only Git, but every time you would like to record your changes, Git will start checking that every single file hasn't been changed. And it's totally fine if your project is not bigger than a couple of Mb, but if you have hundreds of Gb of data, or you have hundreds of thousands of small files, it will take an eternity to stage your project. Another reason is that if you decide to publish your code to a GitHub, or similar resource, they usually have very strict limitations on a size of a repository. And if you have a long history of changes in your Git, with recorded information about big files, removing this information from commits is no fun. So, it's easier to follow a good practice from the very beginning. Another big advantage is that if you let's say developed your data analysis pipeline and want to test how it performs on different sets of data, it's much easier to simply switch between different versions of data using DVC, rather than editing your script, or creating multiple versions of a data folder.
+
+Now, when we have our data tracked with DVC, we can do our first record to Git - commit. First, let's check the status, using this command:
+
+`git status`
+
+You should get a brief summary of what changes were made to files (added, deleted, changed). Then, you need to specify what files to stage, or alternatively, just stage everything with:
+
+`git add .`
+
+*"."* in this case, mean adding everything. And then, you can commit these changes using:
+
+`git commit -m "write here a very short summary of what you did. Let's say Initial commit"`
+
+You can also do these operations also using GUI (remember that button on the left for version control?). For this first, you need to open the repository. Press Ctrl+Alt+P - this will open a panel (which is a very cool tool by itself, but it would go beyond the scope of this tutorial) and type it Git: Open Repository Navigate to the folder of this repository and hit enter. Now, on the version control panel, you should see your git repository open and you can see what changes were made to the files, stage them, commit, push, pull, and many other operations. Also, we can recommend installing an extension "Git graph" which expands the functionality of the default tool.
+
+Try to do commits from time to time. Let's say daily, or when you finish a specific part of the work. It's generally a good idea to commit a working code, as it will save a ton of time in the future if you decide to test this specific version of code.
+
+Of course, this is not even a percent of the functionality of Git and DVC. If we would try to describe everything it would take a whole good course. So, we encourage you to explore it on your own here are some good tutorials that you can find handy:
+
+-   <https://git-scm.com/doc>
+
+-   <https://dvc.org/doc>
+
+### Data processing
+
+Now we have our raw RNA-seq data and we can try to process it. We need to assess the quality of reads, filter them, align them to a genome, basically do the pre-processing, and get a gene count table. To do this we are going to use the [NextFlow](https://www.nextflow.io/) framework and [RNA-seq pipeline developed by nf-core](https://nf-co.re/rnaseq/3.12.0). The advantage of this approach is the ease of installation of the pipeline, portability, and great community support.
