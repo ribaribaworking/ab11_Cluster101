@@ -1,0 +1,606 @@
+---
+title: "CCRI cluster user guide"
+author: "Bioinformatics Core Unit"
+date: '2023-07-26'
+output: 
+  html_document: 
+    toc: true
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    theme: yeti
+---
+
+# What this tutorial is about
+
+#draft - rewrite it later
+
+Hi dear scientist! We are glad to see that you decided to go on the road to an adventure in computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
+
+We believe that standardization of work processes is good for reproducibility in data science and make it much easier to collaborate on projects.
+
+Here, in the next hour or two, you will learn how to keep your data organized and structured, so that if you leave, your colleagues could continue working on your project without any delays. We believe that the best way to learn it is actually just to try to do it. That is why this tutorial is designed in a way, that you do a small project - RNA-seq analysis. Even if you are not particularly interested in this specific type of data, it serves as a good example and we can demonstrate different aspects of data and environment management, organization of work, and so on. At the same time, we try to split the whole process into independent sections, one covering one particular aspect of the work so that it would be easier to search for a particular piece of information.
+
+So, you want to connect to the cluster to run RStudio, or process your NGS data, how do you do that? Let's set up your machine first.
+
+# Essentials
+
+Here we will cover the very basic topics such as setting up the IDE, connecting to a server, basic Linux commands, and some tips on how to keep your project organized.
+
+## Setting up the machine.
+
+![](data/images/000_terminals_alternatives.png){width="678"}
+
+There are different ways to access and work on an HPC cluster. For instance, macOS users have pre-installed Terminal on their systems. Another very popular solution - iTerm2. For Windows users, there are Windows Terminal or mobaXterm. But luckily it doesn't matter so much whether you have Windows or Mac, we recommend using VS Code, as a most simple and reliable tool.
+
+The first step - [download the VS C](https://code.visualstudio.com/)ode, install, and run it. It will look something like this
+
+![](data/images/001_vscode_starting_screen.png){width="693"}
+
+On the left panel you can see several tabs:
+
+-   Explorer - allows you to navigate in your working space, and observe files and folders
+
+-   Search - Search in documents
+
+-   Source control - gives you control over a git repository. We will cover that later
+
+-   Run And Debug - gives you the possibility to use automated debugging. We don't need it for now
+
+-   Extensions - the main beauty of VS Code. Allows to install different modules that extend the capabilities of the IDE
+
+-   Profile - allows you to connect your GitHub account and synchronize settings across different devices
+
+-   Settings - settings and more ;)
+
+If VS Code is new to you, we recommend having a look at the guides that VS Code offers to check: "Get Started with VS Code" and "Learn the Fundamentals". Also, the [official guides from Microsoft](https://code.visualstudio.com/docs/introvideos/basics) are really good.
+
+Before we begin, we need to do a couple of adjustments to the VS Code, so that it works well with a cluster. This is **important**, please **don't skip** this step.
+
+First, we will deactivate FileWatcher - this is a plugin that is constantly checking if files are changed in an open directory. This is convenient, but if you work in a folder that has many files it can load a CPU heavily. To do this follow these steps:
+
+-   *Settings* \> *FileWatcher* \> *Add Pattern* \> add "\*"
+
+Second, we will deactivate *TypeScript and JavaScript Language Features Support.* Sometimes it can load a CPU as well. Do the following steps:
+
+-   *Extensions \> \@builtin TypeScript and JavaScript \> Disable \> Reload*
+
+    ![](data/gifs/vsc_setup.gif)
+
+Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. Also, before connecting to the server, make sure that you have your account set up and Isilon storage mounted. To do that, contact BICU, we will help you. Ok, now you are ready to connect to the cluster. Follow these simple steps:
+
+-   Click "*\>\<"* symbol in the left lower corner \> *Connect to Host* \> *+ Add New SSH Host...* Or select one that you have set up already.
+
+-   Select the location where you want to store the config (the default is fine)
+
+-   Then type in "ssh your_user_name\@machine_ip", where you_user_name is the name that you got from us and IP addresses:
+
+    | Machine Name | Machine Linux Name  | IP address |
+    |--------------|---------------------|------------|
+    | Biodirt      | 011SV155.AD.CCRI.AT | 10.5.1.155 |
+    | Biohazard    | 011SV157.AD.CCRI.AT | 10.5.1.157 |
+    | Biowaste     | 011SV154.AD.CCRI.AT | 10.5.1.154 |
+
+-   Enter your password (if it's the first time you log in to your account, then you have a generic password that you **must** change asap) and hit enter. You might be asked if you trust the connection, or if you want to
+
+    ![](data/gifs/remote_ssh.gif)
+
+It doesn't look like much happened, but you are on the server. Now, let's go to the next step and have an overview of the structure of our cluster infrastructure and learn some basic Linux commands.
+
+## Cluster structure
+
+We have 4 different machines, available for common usage.\
+DESCRIBE HERE the structure and recommendations on where to store what. Give guidelines about Raw data storage, Scratch and so on.
+
+## Linux commands 101
+
+Our server is a Linux machine and working with it involves a terminal and using Bash scripting language. If you have experience with Unix systems, feel free to skip this section, as it involves very basic concepts. If you never worked with it before, in the beginning, the terminal can seem to be overwhelming and feels awkward, but you will get used to it and soon will see how fast and easy you can make many things using bash. Now, let's learn basic commands that are absolutely essential. To start using the terminal press *Ctrl+Shift+\`* or *Terminal \> New Terminal* in the menu upper bar.
+
+1.  First, let's check where we are now, by typing `pwd`The output will look like this:\
+    `/home/test_user` Where `/` is a root directory, `/home` is the folder where folders of all users are stored, and `/you_user_name` - is your home folder.
+
+2.  Now, let's check what we have in our folder by typing `ls` Now we don't have much in our folder, but you should have Isilon storage mounted, so you should see it in the output:\
+    `bioinf_isilon`
+
+3.  But this is not everything, there are also hidden files. If you want to see them, try:\
+    `ls -a`\
+    you will see a bunch of files like these: *.bashrc, .profile, .bash_logout,* etc. Files starting with a dot are hidden by default.
+
+4.  When you will have a lot of files, it becomes more practical to visualize them as a list. To do that use\
+    `ls -lh`\
+    `-l` stands for "list" and `-h` for *"Human-readable"*, so the size of the files is depicted as Mb, Gb, Kb, which is easier to read.
+
+5.  Ok, now we can peek at what we have in the bioinf_isilon directory:\
+    `ls bioinf_isilon/`\
+    We will see several folders:\
+    `core_bioinformatics_unit  Labdia  _OLD-TEST  Research  zArchive  zClipboard  zrawdata`
+
+6.  Great, now let's learn how to move around. Start typing `cd` and press "*Tab*", so that the terminal does autocompletion and you could see what folders are out there. So, try to move to the folder of your group, or anywhere really:\
+    `cd bioing_isilon/Research/YOUR_GROUP/Public`
+
+7.  If you want to move to a folder above, you can use `cd ../`\
+    To a previous location use `cd -`\
+    To come back to your home directory please just type `cd ~`\
+    One important thing to remember is that in comparison to Windows, Linux is case-sensitive, so `Research`, `research`, `RESEARCH` and `ReSeArCh` are all different names.
+
+    ![](data/gifs/lscd.gif)
+
+Great! Now we are able to move around and see what we have in different directories. Now let's try to create files, and directories, rename, copy, cut, and delete them.
+
+4.  Ok, assuming that you are in your home directory, let's create a new folder, using this command:
+
+    `mkdir test_folder`\
+    Check that the folder is there, with `ls` One important note - it's generally a good idea to avoid using special characters and spaces in the names of directories and files. It's still possible, but you would need to use escape characters and it makes everything much more cumbersome. So, try to avoid it.
+
+5.  It's also possible to create several folders inside one another. This, you need to use the parameter `-p` Let's do it and move there\
+    `mkdir -p test_folder/another_test/just_one_more`\
+    `cd test_folder/another_test/just_one_more`
+
+6.  Atm, it feels a bit empty, so let's create a file inside. You can do it in several ways, for example, you can use this command:\
+    `touch file.txt`
+
+    FYI it's also possible to do it using GUI in the VS Code. To do that, click in the left panel *Explorer \> Open Folder \> Ok.* You will see a tree of files and buttons "Create file", "Create Folder" and "Refresh".
+
+7.  When you created the file, let's write something inside. There are countless ways to do that, but assuming you have the "*Explorer*" open, find the file, open it, and write something inside.\
+    ![](data/gifs/mkdir_touch.gif)
+
+8.  To observe the content of a file we typically use the following commands:\
+    `less file.txt` - allows look at the whole file. Navigation by arrows, and space bar. To exit press `q`*\
+    *`head file.txt` - allows looking at the first 10, or n rows\
+    `tail file.txt` - the same, but for the last rows
+
+9.  Now, let's try to copy files using:\
+    `cp file.txt ../`\
+    we specify first what we want to copy, then the destination. If you want to change the original name of the file, just specify the new name at the end:\
+    `cp file.txt ../file_copy.txt`\
+    \
+    Moving and renaming works very similarly - use:\
+    `mv ../file_copy.txt ../file_with_new_name.txt`
+
+10. Now, let's try to remove the file: `rm file.txt`\
+    \
+    **Important note** - rm removes the file permanently. There is no such a thing as "trash bin". So, be very careful with what you are removing.
+
+11. Now let's try to remove the folder that we created. First move to the home directory. Then, we need to use `-r` parameter:\
+    \
+    `rm -r test_folder`
+
+    ![](data/gifs/less_rm.gif)
+
+So, now we know how to create files and folders, rename them, copy and delete. Also, remember that you can do it in the GUI, but sometimes it can be easier to do with CLI. In principle, these are the most commonly used commands that you really need to remember. There are also others that you could find in [the cheat sheet](https://cheatography.com/davechild/cheat-sheets/linux-command-line/).
+
+There are also several nice tutorials some of which are here:\
+[Link #1](https://rnabio.org/module-00-setup/0000/08/01/Unix/)
+
+## Managing your environments with Conda
+
+One of the most important practices in bioinformatics work (probably in a wet lab it's even more important) is making your work easily reproducible. So, it's crucial to know what packages and what versions of them you are using, and properly record this information. And as many packages might have many dependencies, proper management of it is crucial, so that your project would not turn into a spaghetti monster.
+
+There are different solutions out there and one of the most popular ones is [Conda](https://docs.conda.io/en/latest/) package manager, or its sister [Mamba](https://mamba.readthedocs.io/en/latest/#). They allow you to install packages of specific versions and easily create virtual environments for a project when you need them. To install Mamaba use this line of code while being in your home directory.
+
+`wget "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"`
+
+`bash Mambaforge-$(uname)-$(uname -m).sh`
+
+![](data/gifs/install_mamba.gif)
+
+Don't forget to reload the terminal, so that mamba gets activated.
+
+After installation, you have a very convenient way to control what to install and how. Now you are in your default (base) environment - it's a good idea to store here the tools that you are going to use on a daily basis. And for specific projects, it makes sense sometimes to create separate environments. You will see how it works in the following sections of the tutorial. But first, we will install a couple of packages that are absolute must-haves.
+
+First, let's install tmux. This is a terminal multiplexer that allows you to create different sessions, that you can switch between easily and that will run your commands even when you get disconnected from a cluster. To do that, use this simple line of code:
+
+`mamba install tmux`
+
+When the installation is complete, type in `tmux` in the terminal to start a session. Now you can see that not many things changed at first glance, but in reality, now we have a separate tmux process running and if we start some pipeline that will take let's say 5 hours to complete it won't crush if we get disconnected from the server. Also, we can easily create, switch windows and tabs just like in a normal web browser.
+
+For instance, we can split the window into two panes. But first, a small note about the controls in tmux. All commands in tmux are triggered by a **prefix key** followed by a **command key**. By default, tmux uses `Ctrl+b` as a prefix key (often labeled as `C-b`). It can feel weird at the beginning, but you will get used to it very fast.
+
+So, if you want to split the screen into left and right, press `Ctrl+b`, release, then press `%`. To switch between them use `C-b <arrow key>`. Great! So, this is very convenient when you want to have several terminals open, but want it to be nicely organized. Now let's see the true beauty of the tmux.
+
+Let's run a very simple code that will just show us the date and time every 3 seconds until we stop it:\
+`while true; do 'date'; sleep 3; done`
+
+Now, if we detach from the current tmux session using `C-b d` We went to just a regular terminal, let's connect to the running session. To do that, we need to know the name of the session. let's check it with:\
+`tmux ls`\
+You should see only one session with the name "0". To connect to it use:\
+`tmux a -t 0`
+
+And boom, you are back! And you can notice that the session was active - there are more dates printed (to stop the running process press `Ctrl+C)`. So, it might not seem like something extraordinary, but by default normal terminals stop processes associated with them when ssh tunnel is closed. So, if you started your precious script, went to make a coffee and your computer went to sleep in the meantime, the ssh tunnel breaks and your script gets stopped. So, tmux creates constantly running processes. Also, if you work on several projects it is very practical to have separate sessions, for each individual project. It helps to keep everything organized.
+
+And before we go to the next section, here are more handy commands:\
+`C-b x` - close the current pane\
+`C-b "` - horizontal split\
+`C-b w` - show all windows
+
+Also, here you can find some really good tutorials if you want to deep dive into the tmux:
+
+-   [A Short and simple introduction](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+
+-   [How to customize tmux](https://www.hamvocke.com/blog/a-guide-to-customizing-your-tmux-conf/?__proto__.e32a5ec9c99=ddcb362f1d60)
+
+-   [Cheat Sheet](https://tmuxcheatsheet.com/)
+
+So, now we are fully prepared for creating our first project and see what is the best way to keep the work organized and trackable.
+
+## Creating a project
+
+Now we can simulate a typical project and show what could be a convenient way to organize your workflow. In this particular example, we will try to analyze RNA-seq data. You will see how to organize folder structure in a convenient way, and how to manage big data versions and your code. You will see how the usage of the Conda environment can be beneficial and we will show how how to share this information with your potential collaborators. Also, you will see how to run RStudio in a container.
+
+### Folder structure setup
+
+First, we need to create a folder where we will locate the project. We would suggest you to create a folder in your research group folder if you still don't have one. It makes life much easier for your colleagues if they deice to pick up your project when you leave or re-analyze some data after a long time. A typical path would look like this:
+
+`~/bioinf_isilion/Research/GROUP/USER/projects/ID000_YYYYMM_ProjectName`
+
+Also, it can be a good idea to run big pipelines on a `/scratch` because some of them tend to create very massive temporary files that are not get removed, which consumes a lot of space on the disk.
+
+The name of the project folder would contain the following information `ID000` - your ID (for example I use AB as an acronym of my name and surname), followed by a number in the format `001, 002, …` It's quite convenient to give each project a unique index so that it would be easier for you to search it.\
+`YYYYMM` - date in the format YEAR, month. The year goes first because when folders are arranged by year first, it becomes easy to sort them.\
+`ProjectName` - just a short description of what this project is, eg. Neuroblastoma_RNAseq
+
+A typical directories structure would look like this:\
+`ID000_YYYYMM_ProjectName/`\
+`├─ RProject/                              - folder where you will store your Rproject`\
+`│  ├─ Results/                            - Results that you will produce with R code`\
+`│  ├─ Misc/                               - maybe you have some important metadata for R`\
+`├─ Data_Raw/                              - Here it's either RAW data, or a symlink to it`\
+`│  ├─ 01_Sample/`\
+`│  ├─ 02_Sample/`\
+`├─ Data_processed/                         - In some cases you can produce intermediate files`\
+`├─ Src/                                   - You scripts for data processing`\
+`│  ├─ 01_DataProcessingScript.sh`\
+`│  ├─ 02_AnotherDataProcessingStep.sh`\
+`├─ Misc/                                  - Additional data, eg. references, metadata, etc.`\
+`├─ .gitignore                             - part of your git repo`\
+`├─ README.md                              - it's nice to have a short description of a project`
+
+Of course, it's not a strict rule that you always must have such a structure. No. It's just an idea of how it might look like. Just keep it clean and self-explanatory, or add a very good description of what is what. Make your, or a colleague's life, who will use your code after you easier.
+
+### Loading the data
+
+So, move to a directory of your group and try to create a project folder, and inside `Data_Raw`, `Src` and `Misc` folders. When this is done, let's pull a test dataset. For this, move to `Src` and create a file `00_DataLoader.sh` We will work with an example dataset - RNA-seq data from human.\
+Open the created file and write there this code:
+
+``` bash
+#!/bin/bash
+wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar -O ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar
+tar -xvf ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar -C ../Data_Raw/
+rm ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar
+```
+
+Save the file, and execute it from the `Src` folder with:
+
+`bash ./00_DataLoader.sh`
+
+Great! If everything went well, then you should have a Data_Raw folder with 12 fastq files.
+
+### Version control Git and DVC
+
+Now, when we created the structure and populated our folder it's a good time to give some basic ideas on how to keep track of changes that you make to your code, data, and so on. We will use 2 packages for this - git and dvc. Try to install them using mamba. They are general-use packages, so we will install them in our base environment. The command should look like this:
+
+`mamba install git dvc`
+
+Git is an open-source system that allows users to easily control the changes that happen to the code and see the history of these changes. It's very widely used and we highly encourage you to implement it in your workflow. If you want to make changes to your code, you don't want to create a backup every single time - it consumes a lot of hard drive space and becomes cumbersome to know what exactly you did and when. So, Git allows you to create different branches, switch between them, merge them, and easily "go back in time" to see what changes were made to the code, when, and by whom.
+
+Another system that we are going to use is DVC - this is very similar to Git, but it is designed specifically for large data because Git can have a hard time sometimes keeping track of changes to several TB of NGS data that you might have. In this tutorial, we are going to cover only the very basics, but if you are interested, you are more than welcome to explore other tutorials.
+
+So, we will start with initializing out git repository. Make sure that you are located in `…/ID000_YYYYMM_ProjectName/` and then type in the following command:
+
+`git init`
+
+So, you created a git repository! You can see that you have a new hidden folder .git which will contain information about changes that you do to your files in this folder. It's not done automatically, so you need to do it manually, but first, let's create a file where we will specify what folders and files we don't want to track. Create a file `.gitignore` and populate it with the following:
+
+``` .gitignore
+/Data_Raw
+/Data_Processed
+*.fastq
+```
+
+So, we just specify in this file what should be ignored by Git. We specifically want to ignore raw data, because we will track it with DVC. Actually, DVC does it automatically, but we would like to demonstrate how to use this functionality. And to initialize DVC tracking, you need to do similar steps:
+
+`dvc init`
+
+And then:
+
+`dvc add Data_Raw`
+
+This will create a `Data_Raw.dvc` file, that is specifically linked to this folder, so that Git will track not the raw, big files themselves, but a small file, linked to this folder.
+
+You may ask - "It looks quite complicated! Why do we need to use DVC? Isn't Git just enough?" Well. if theory, you can use only Git, but every time you would like to record your changes, Git will start checking that every single file hasn't been changed. And it's totally fine if your project is not bigger than a couple of Mb, but if you have hundreds of Gb of data, or you have hundreds of thousands of small files, it will take an eternity to stage your project. Another reason is that if you decide to publish your code to a GitHub, or similar resource, they usually have very strict limitations on a size of a repository. And if you have a long history of changes in your Git, with recorded information about big files, removing this information from commits is no fun. So, it's easier to follow a good practice from the very beginning. Another big advantage is that if you let's say developed your data analysis pipeline and want to test how it performs on different sets of data, it's much easier to simply switch between different versions of data using DVC, rather than editing your script, or creating multiple versions of a data folder.
+
+Now, when we have our data tracked with DVC, we can do our first record to Git - commit. First, let's check the status, using this command:
+
+`git status`
+
+You should get a brief summary of what changes were made to files (added, deleted, changed). Then, you need to specify what files to stage, or alternatively, just stage everything with:
+
+`git add .`
+
+*"."* in this case, mean adding everything. And then, you can commit these changes using:
+
+`git commit -m "write here a very short summary of what you did. Let's say Initial commit"`
+
+You can also do these operations also using GUI (remember that button on the left for version control?). For this first, you need to open the repository. Press Ctrl+Alt+P - this will open a panel (which is a very cool tool by itself, but it would go beyond the scope of this tutorial) and type it Git: Open Repository Navigate to the folder of this repository and hit enter. Now, on the version control panel, you should see your git repository open and you can see what changes were made to the files, stage them, commit, push, pull, and many other operations. Also, we can recommend installing an extension "Git graph" which expands the functionality of the default tool.
+
+Try to do commits from time to time. For instance daily, or when you finish a specific part of the work. It's generally a good idea to commit to a working code, as it will save a ton of time in the future if you decide to test this specific version of code.
+
+Of course, this is not even a percent of the functionality of Git and DVC. If we would try to describe everything it would take a whole good course. So, we encourage you to explore it on your own here are some good tutorials that you can find useful:
+
+-   <https://git-scm.com/doc>
+
+-   <https://dvc.org/doc>
+
+## Data processing using NextFlow
+
+Now we have our raw RNA-seq data and we can try to process it. We need to assess the quality of reads, filter them, align them to a genome, basically do the pre-processing, and get a gene count table. To do this we are going to use the [NextFlow](https://www.nextflow.io/) framework and [RNA-seq pipeline developed by nf-core](https://nf-co.re/rnaseq/3.12.0). The advantage of this approach is the ease of installation of the pipeline, portability, great community support, and of course, simplicity of use.
+
+Let's [install](https://nf-co.re/docs/usage/installation) the Nextflow using Conda (Mamba):
+
+`conda config --add channels defaults`\
+`conda config --add channels bioconda`\
+`conda config --add channels conda-forge`\
+`mamba create --name ID000_project_env`\
+`mamba activate ID000_project_env`\
+`mamba install nextflow tmux git dvc`
+
+Here we added more channels to our conda config so that we could install packages from other repositories, not only the default ones. Then we create a new environment and specify a name. Then we activate this environment and install the NextFlow.
+
+One of NextFlow's advantages is containerization - you don't need to worry about managing the correct version of every single tool and its dependencies, which makes work much easier to reproduce. Another advantage is that you don't need to pull the pipeline every time for each project - we have a centralized storage of images. Now we will specify the `NXF_SINGULARITY_CACHEDIR` variable so that nf-core would know where to look for images. It's easy to do - open `.bashrc` in your home directory and add the line to the end of the file:
+
+`NXF_SINGULARITY_CACHEDIR=~/bioinf_isilon/core_bioinformatics_unit/Public/singularity_images`
+
+When this is done, you would need to restart your terminal. After that don't forget to activate your mamba environment. You can list environments `mamba env list` and find the one that you created for this project and activate it with `mamba activate NAME_OF_THE_ENVIRONMENT`
+
+Next step - we need to create several files so that the pipeline can function properly. First, let's create a csv sample table with file paths that we have. Create a file `PROJECT_FOLDER/Misc/sample_table.csv` and write the following lines:
+
+``` bash
+sample,fastq_1,fastq_2,strandedness
+HBR_R1,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+HBR_R2,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+HBR_R3,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep3_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+UHR_R1,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep1_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+UHR_R2,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep2_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+UHR_R3,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
+```
+
+Make sure that `ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER` is replaced with the absolute path to your project folder (should look like this: `/home/USERNAME/path/to/your/project.folder/` I**mportant** - it should be an absolute path! *"\~"* as a reference to a home folder is not working). This csv table specifies the names of samples and provides paths to fastq files.
+
+Now let's create a bash script that will run the pipeline. In the `src` folder create a file `01_run_RNAseq_ppln.sh` and populate it with the following code:
+
+``` r
+#!/bin/bash
+export NXF_OPTS='-Xms1g -Xmx4g'
+export NXF_SINGULARITY_CACHEDIR=~/bioinf_isilon/core_bioinformatics_unit/Public/singularity_images
+
+cd ../Data_Processed/
+
+fasta_dir=~/bioinf_isilon/core_bioinformatics_unit/Public/references/Human_GRCh38_v102/Homo_sapiens_Genome.GRCh38.102.fa
+salmon_index_dir=~/bioinf_isilon/core_bioinformatics_unit/Public/references/Human_GRCh38_v102/salmon_index/Homo_sapiens.GRCh38.102_AllRNA_quasi31/
+gtf_dir=~/bioinf_isilon/core_bioinformatics_unit/Public/references/Human_GRCh38_v102/Homo_sapiens.GRCh38.102.gtf
+config_file=~/bioinf_isilon/core_bioinformatics_unit/Public/pipelines/biohazard_low.config
+star_index_dir=~/bioinf_isilon/core_bioinformatics_unit/Public/references/Human_GRCh38_v102/Homo_sapiens_GRCh38_v102_star_index_150bp
+
+nextflow run nf-core/rnaseq \
+          -c "$config_file" \
+          --input ../Misc/sample_table.csv \
+          --outdir  ../Data_Processed \
+          --genome GRCh38 \
+          --fasta "$fasta_dir" \
+          --gtf "$gtf_dir" \
+          --star_index "$star_index_dir" \
+          --salmon_index "$salmon_index_dir" \
+          --aligner star_salmon \
+          -profile singularity \
+          --max_cpus 12 \
+          --max_memory '10.GB' \
+          --max_time '240.h'
+```
+
+This is going to be an executable file. At the beginning of the file, we change the directory to a `Data_Processed`, to not pollute the `src` folder with temporary files that NextFlow is going to produce. Also, we specify the variables with paths to necessary files - genome files, indexes, etc. We already have a big collection of built indexes and reference genomes, so before loading it check the Public folder, maybe we already have what you need. You can read more about the parameters [here](https://nf-co.re/rnaseq/3.12.0/docs/usage).
+
+Now, everything should be ready for the run. Navigate to src folder and run `bash 01_run_RNAseq_ppln.sh` Don't forget to run it from tmux. You should see the start of the pipeline. It might take around an hour or two to complete the run, depending on how loaded the cluster is.
+
+#### Monitoring resources
+
+While you are waiting it can be a good idea to see how we can monitor how much resources our pipeline is taking. We use `htop` as a monitoring tool. The interface look like this:
+
+![](data/images/htop_example.png)
+
+You can see a graphical representation of the load on cores, RAM, and Swap Memory usage in the upper part and a list of processes below it. You can sort by amount of CPU%, MEM%, and USER. It's a good idea to monitor how much resources your pipeline is consuming, to not interfere with the jobs of other people. Sometimes you can see that your process consumes more than 100% CPU - it means that the process uses several cores. To save time, we just leave a link to the short [tutorial](https://www.deonsworld.co.za/2012/12/20/understanding-and-using-htop-monitor-system-resources/).
+
+#### NextFlow Output
+
+When the pipeline will be done, you will have a lot of different files in your `Data_Processed` folder.
+
+-   `work` directory, which contains a lot of temporary files, that most likely you don't want to track either with DVC or with Git. So, you need to add to `.gitignore` and to `.dvcignore` the following pattern:
+
+    `*/work/*`
+
+    Then, it will be a good idea to track the results with DVC and Git
+
+    ``` bash
+    dvc add Data_Processed
+    git add .
+    git commit -m "first nextflow run complete"
+    ```
+
+-   `fastqc` and `multiqc` folders contain quality reports. It's a good idea in general to check how good your samples are
+
+-   `pipeline_info` have information about the execution of the pipeline - timeline, resources consumed, DAG, etc
+
+-   `star_salmon` folder contains gene count tables, BAMs, logs, etc. We are going to use data from this folder for the downstream analysis
+
+-   `.nextflow.log` - the log about the pipeline run
+
+Full information about the output you can find here:
+
+Now we can continue our analysis using R.
+
+## Data analysis using R
+
+#### Launching RStudio
+
+Now, as we have our data pre-processed, mapped, and counted it's time to go one step more and try to analyze it in R. You can of curse pull the count tables to your computer and analyze them locally, but there is a better option - we can run RStudio on the cluster and take advantage of multiple CPUs and more RAM. We run RStudio as a docker container, as it's very convenient and simple. So, to run it create in your `.../YOU_PROJECT_FOLDER/` folder the following file - `run_Rstd_docker.sh`
+
+``` bash
+#!/bin/bash
+ 
+# Description: bash script to start docker Rstudio server
+#    Rstudio docker image: ccribioinf/dockrstudio:4.0.3-v1
+#    docker image is based on tidyverse: rocker/tidyverse:4.0.3
+#
+# Parameters:
+#    new_port (-p ${new_port}:8787) Map TCP port 8787 (default for Rstudio server) in the container to port $new_port on the Docker host.
+#    -e USERID; -e GROUPID - specifying user id and group id for correct file ownership
+#    -e PASSWORD - password for the Rstudio server; default user is 'rstudio', but this can be changed using, for example, -e USER=$(whoami) 
+#    --volume - binding volumes for persistent data storage
+#    --workdir - specifying working directory; this may not work in Rstudio server!
+
+new_port=XXXXX
+RENV_PATHS_CACHE_HOST=/home/USER/bioinf_isilon/Research/resources/renv_cache/  # the path to an renv cache on the host (global) machine
+RENV_PATHS_CACHE_CONTAINER=/renv_cache  # the path to the cache within the container
+# potentially bind to local cache to speed up package installation
+project_name="PROJECT_NAME" # used to name the container
+USER=$(whoami)
+
+docker run --rm \
+  -p ${new_port}:8787 \
+  -e USERID=$(id -u) \
+  -e GROUPID=$(id -g) \
+  -e PASSWORD=test0 \
+  --name ${project_name}_${USER} \
+  -e "RENV_PATHS_CACHE=${RENV_PATHS_CACHE_CONTAINER}" \
+  -v "${RENV_PATHS_CACHE_HOST}:${RENV_PATHS_CACHE_CONTAINER}" \
+  --volume=$(pwd):"/home/rstudio/workspace" \
+  --workdir="/home/rstudio/workspace" \
+  ccribioinf/dockrstudio:4.2.0-v1
+```
+
+Here, it's important that you need to change some variables:
+
+-   `new_port` - change to a value between 1024 and 65536. It must be unique (not overlap with other users). You will use it to access your RStudio session
+
+-   `project_name` - Change to something you like
+
+-   `RENV_PATHS_CACHE_HOST` - you need to define a folder where you want to store your cache. It should be somewhere on the Isilon, **not** in your Home directory on a machine (\~/), and you need to stick to this folder for all your projects.
+
+Sometimes, if you have a huge project, you might want to start the RStudio in a separate folder. It can be that there is a huge amount of small files (like in the `work` folder that NextFlow creates) and they will slow down RStudio substantially. But usually, it's fine.
+
+So, to start RStudio:
+
+-   Run the script that you just created (using `tmux`): `bash run_Rstd_docker.sh`
+
+-   Go to your browser and type in `http://IP.ADDRESS.OF.THESERVER:PORTNUMBER` (for instance `http://10.5.1.157:48911/`)
+
+-   Log in with `rstudio` `test0` credentials
+
+#### Setting up an RProject
+
+When you start a new work, it's advised to create a new project - it will help you to keep your work organized and manage your packages. To do that in the RStudio click "File" \> "New project..." \> "Existing directory" \> locate where you want to have your R code (it's usually a nice idea to have it in `…/YOURPROJECT/RProject` )
+
+We assume that you have experience with R and we want to simply show some good practices on an example of one project. If you want to learn more here are some good tutorials:
+
+\############## Add here links to good tutorials \############
+
+Before we start writing any code, it's a good idea to decide how we are going to control the version of R packages, as our project will require installing a lot of them. One option is to re-install them every time we relaunch our docker image. But this is far from optimal - it takes a lot of time, and also if someone wants to re-run your code after several years, it will be not clear what version of every package was used, which might compromise the analysis. To overcome these challenges we are going to use the `renv` package. To start using it, click *"Tools"* \> *"Project options"* \> *"Environments"* \> put a tick in the *"Use renv with this project".* Now, in our *"Packages"* tab we will have a *"renv"* button. We will see how it works in a moment.
+
+Now, let's create a new R Script file and give it a good, self-describing name (`01_RNAseq_analysis.R`) and write the following code in it:
+
+``` r
+# Project Name: Test project 
+# Project Description: Simulate real case to demonstrate best practices
+# Author: flying fish
+# Date: 2023-08-01
+
+# First time launch - you need to install packages and write that info into renvlock file.
+# To do that, uncomment and run the code below:
+#
+# if (!require("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+# BiocManager::install(c("DESeq2", "apeglm"))
+
+# install.packages("cowplot")
+# install.packages("pheatmap")
+# renv::snapshot()
+
+#### Load libraries ####
+library(DESeq2)
+library(ggplot2)
+library(cowplot)
+library(pheatmap)
+
+#### Setting up environment ####
+resDir <- "~/workspace/RProject/Results"
+if (!dir.exists(resDir)){
+  dir.create(resDir)}
+
+#### Load the data ####
+# and add additional metadata #
+load("~/workspace/Data_Processed/star_salmon/deseq2_qc/deseq2.dds.RData")
+
+#changing names to self-explanatory ones
+dds$sample_type <- as.factor(dds$Group1)
+dds$replica <- as.factor(dds$Group2)
+design(dds) <- as.formula("~replica + sample_type")
+
+#### Filter the data ####
+#remove genes with too few counts
+smallestGroupSize <- 3
+keep <- rowSums(counts(dds) >= 10) >= smallestGroupSize
+dds <- dds[keep,]
+
+#### DESeq2 run ####
+# data transformation - variance stabisisation#
+vsd_filt <- DESeq2::varianceStabilizingTransformation(dds, blind = FALSE) 
+
+# checking PCAs and saving plots
+pca_plot_sample_type <- DESeq2::plotPCA(vsd_filt, intgroup="sample_type") + theme_bw()
+pca_plot_replica <- DESeq2::plotPCA(vsd_filt, intgroup="replica") + theme_bw()
+
+combined_PCA <- ggdraw() +
+                  draw_plot(pca_plot_sample_type, x = 0, y = 0.4, width = 1, height = 0.5) +
+                  draw_plot(pca_plot_replica,     x = 0, y = 0, width = 1, height = 0.5)
+ggsave(filename = file.path(resDir, "PCA_plots.png"))
+
+# Running the DESeq2 
+dds <- estimateSizeFactors(dds) 
+dds <- DESeq2::DESeq(dds)
+res <- results(dds)
+
+#save the result
+saveRDS(dds, file = file.path(resDir, "dds_filtered.Rds"))
+
+resultsNames(dds)
+#perform LFC shrinkage and draw MAplot
+resLFC <- lfcShrink(dds, coef="sample_type_UHR_vs_HBR", type="apeglm")
+MA_plotf <- plotMA(resLFC)
+ggsave(filename = file.path(resDir, "MA_plot.png"))
+
+# Order results by p-value and save to a table
+resOrdered <- res[order(res$pvalue),]
+write.csv2(resOrdered, file = file.path(resDir, "result_table.csv"))
+
+# Heatmap visualization
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(dds)[,c("sample_type","replica")])
+diff_genes <- pheatmap(assay(vsd_filt)[select,], cluster_rows=TRUE, show_rownames=FALSE,
+              cluster_cols=FALSE, annotation_col=df)
+
+ggsave(filename = file.path(resDir, "heat_map.png"), diff_genes)
+```
+
+This code is doesn't do a very sophisticated analysis. It just aims to demonstrate some basic concepts:
+
+-   Managing environment - the code will install the necessary libraries and make a snapshot of them. It will be stored in `renv.lock` file and can be restored later. [Here](https://rstudio.github.io/renv/articles/renv.html) is a good short tutorial on renv. You can simply supply your code with this .lock file and other users will manage easily to restore the exact environment that you used.
+
+-   Writing comments to sections. It will make your life easier in the future when you will return to this code after several months.
+
+-   And some small tips:
+
+    -   Using variables as `resDir` so that if you decide to change the folder, you would not need to re-write it everywhere.
+
+    -   Saving intermediate objects as Rds can speed up your work, when you decide to re-run the code, because you would not need to assemble and process your data one more time.
+
+    -   when you work with a lot of different packages, it might become tricky to remember which package each function belongs to, so for this, you can call a function this way `PACKAGENAME::function()`
