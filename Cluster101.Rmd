@@ -157,7 +157,7 @@ Great! Now we are able to move around and see what we have in different director
     Moving and renaming works very similarly - use:\
     `mv ../file_copy.txt ../file_with_new_name.txt`
 
-10. Now, let's try to remove the [[file:\\\\](file:){.uri}](%5Bfile:%5D(file:)%7B.uri%7D){.uri} `rm file.txt`\
+10. Now, let's try to remove the file: `rm file.txt`\
     \
     **Important note** - rm removes the file permanently. There is no such a thing as "trash bin". So, be very careful with what you are removing.
 
@@ -229,9 +229,11 @@ Now we can simulate a typical project and show what could be a convenient way to
 
 ### Folder structure setup
 
-First, we need to create a folder where we will locate the project. We would suggest you to create a folder in your research group folder if you still don't have one. It makes life much easier for your colleagues if they deice to pick up your project when you leave, or re-analyze some data after a long time. A typical path would look like this:
+First, we need to create a folder where we will locate the project. We would suggest you to create a folder in your research group folder if you still don't have one. It makes life much easier for your colleagues if they deice to pick up your project when you leave or re-analyze some data after a long time. A typical path would look like this:
 
-`/home/USER/bioinf_isilion/Research/GROUP/USER/projects/ID000_YYYYMM_ProjectName`
+`~/bioinf_isilion/Research/GROUP/USER/projects/ID000_YYYYMM_ProjectName`
+
+Also, it can be a good idea to run big pipelines on a `/scratch` because some of them tend to create very massive temporary files that are not get removed, which consumes a lot of space on the disk.
 
 The name of the project folder would contain the following information `ID000` - your ID (for example I use AB as an acronym of my name and surname), followed by a number in the format `001, 002, …` It's quite convenient to give each project a unique index so that it would be easier for you to search it.\
 `YYYYMM` - date in the format YEAR, month. The year goes first because when folders are arranged by year first, it becomes easy to sort them.\
@@ -260,7 +262,7 @@ Of course, it's not a strict rule that you always must have such a structure. No
 So, move to a directory of your group and try to create a project folder, and inside `Data_Raw`, `Src` and `Misc` folders. When this is done, let's pull a test dataset. For this, move to `Src` and create a file `00_DataLoader.sh` We will work with an example dataset - RNA-seq data from human.\
 Open the created file and write there this code:
 
-``` Bash
+``` bash
 #!/bin/bash
 wget http://genomedata.org/rnaseq-tutorial/HBR_UHR_ERCC_ds_5pc.tar -O ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar
 tar -xvf ../Data_Raw/HBR_UHR_ERCC_ds_5pc.tar -C ../Data_Raw/
@@ -283,7 +285,7 @@ Git is an open-source system that allows users to easily control the changes tha
 
 Another system that we are going to use is DVC - this is very similar to Git, but it is designed specifically for large data because Git can have a hard time sometimes keeping track of changes to several TB of NGS data that you might have. In this tutorial, we are going to cover only the very basics, but if you are interested, you are more than welcome to explore other tutorials.
 
-So, we will start with initializing out git repository. make sure that you are located in `…/ID000_YYYYMM_ProjectName/` and then type in the following command:
+So, we will start with initializing out git repository. Make sure that you are located in `…/ID000_YYYYMM_ProjectName/` and then type in the following command:
 
 `git init`
 
@@ -329,7 +331,7 @@ Of course, this is not even a percent of the functionality of Git and DVC. If we
 
 -   <https://dvc.org/doc>
 
-### Data processing using NextFlow
+## Data processing using NextFlow
 
 Now we have our raw RNA-seq data and we can try to process it. We need to assess the quality of reads, filter them, align them to a genome, basically do the pre-processing, and get a gene count table. To do this we are going to use the [NextFlow](https://www.nextflow.io/) framework and [RNA-seq pipeline developed by nf-core](https://nf-co.re/rnaseq/3.12.0). The advantage of this approach is the ease of installation of the pipeline, portability, great community support, and of course, simplicity of use.
 
@@ -350,9 +352,9 @@ One of NextFlow's advantages is containerization - you don't need to worry about
 
 When this is done, you would need to restart your terminal. After that don't forget to activate your mamba environment. You can list environments `mamba env list` and find the one that you created for this project and activate it with `mamba activate NAME_OF_THE_ENVIRONMENT`
 
-Next step - we need to create several files so that the pipeline can function properly. First, let's create a csv sample table with file paths that we have. Create a file `PROJECT_FOLDER/misc/sample_table.csv` and write the following lines:
+Next step - we need to create several files so that the pipeline can function properly. First, let's create a csv sample table with file paths that we have. Create a file `PROJECT_FOLDER/Misc/sample_table.csv` and write the following lines:
 
-``` BASH
+``` bash
 sample,fastq_1,fastq_2,strandedness
 HBR_R1,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep1_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
 HBR_R2,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/HBR_Rep2_ERCC-Mix2_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
@@ -362,11 +364,11 @@ UHR_R2,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep2_ERCC-Mix1_Build37-
 UHR_R3,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read1.fastq.gz,ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER/Data_Raw/UHR_Rep3_ERCC-Mix1_Build37-ErccTranscripts-chr22.read2.fastq.gz,auto
 ```
 
-Make sure that `ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER` is replaced with the absolute path to your project folder (should look like this: `~/path/to/your/project.folder/` ). This csv table specifies the names of samples and provides paths to fastq files.
+Make sure that `ABSOLUTE_PATH_TO_YOUR_PROJECT_FOLDER` is replaced with the absolute path to your project folder (should look like this: `/home/USERNAME/path/to/your/project.folder/` I**mportant** - it should be an absolute path! *"\~"* as a reference to a home folder is not working). This csv table specifies the names of samples and provides paths to fastq files.
 
 Now let's create a bash script that will run the pipeline. In the `src` folder create a file `01_run_RNAseq_ppln.sh` and populate it with the following code:
 
-``` R
+``` r
 #!/bin/bash
 export NXF_OPTS='-Xms1g -Xmx4g'
 export NXF_SINGULARITY_CACHEDIR=~/bioinf_isilon/core_bioinformatics_unit/Public/singularity_images
@@ -381,7 +383,7 @@ star_index_dir=~/bioinf_isilon/core_bioinformatics_unit/Public/references/Human_
 
 nextflow run nf-core/rnaseq \
           -c "$config_file" \
-          --input ../misc/sample_table.csv \
+          --input ../Misc/sample_table.csv \
           --outdir  ../Data_Processed \
           --genome GRCh38 \
           --fasta "$fasta_dir" \
@@ -395,16 +397,210 @@ nextflow run nf-core/rnaseq \
           --max_time '240.h'
 ```
 
-This is going to be an executable file. At the beginning of the file, we change the directory to a `Data_processed`, to not pollute the `src` folder with temporary files that NextFlow is going to produce. Also, we specify the variables with paths to necessary files - genome files, indexes, etc. We already have a big collection of built indexes and reference genomes, so before loading it check the Public folder, maybe we already have what you need. You can read more about the parameters [here](https://nf-co.re/rnaseq/3.12.0/docs/usage).
+This is going to be an executable file. At the beginning of the file, we change the directory to a `Data_Processed`, to not pollute the `src` folder with temporary files that NextFlow is going to produce. Also, we specify the variables with paths to necessary files - genome files, indexes, etc. We already have a big collection of built indexes and reference genomes, so before loading it check the Public folder, maybe we already have what you need. You can read more about the parameters [here](https://nf-co.re/rnaseq/3.12.0/docs/usage).
 
-Now, everything should be ready for the run. To src folder and run bash `01_run_RNAseq_ppln.sh` Don't forget to run it from tmux. You should see the start of the pipeline. It might take around an hour to complete the run. As a result, you will have a lot of different files in your `Data_Processed` folder. You will have a work folder, which contains a lot of temporary files, that most likely you don't want to track either with DVC or with Git. So, you need to add to `.gitignore` and to `.dvcignore` the following pattern:
+Now, everything should be ready for the run. Navigate to src folder and run `bash 01_run_RNAseq_ppln.sh` Don't forget to run it from tmux. You should see the start of the pipeline. It might take around an hour or two to complete the run, depending on how loaded the cluster is.
 
-`*/work/*`
+#### Monitoring resources
 
-Now, it's a good idea to stage the results with DVC by typing:
+While you are waiting it can be a good idea to see how we can monitor how much resources our pipeline is taking. We use `htop` as a monitoring tool. The interface look like this:
 
-`dvc add Data_Processed`
+![](data/images/htop_example.png)
 
-Great! Now, we successfully pre-processed our data and can go to the next step - analysis of the results in R.
+You can see a graphical representation of the load on cores, RAM, and Swap Memory usage in the upper part and a list of processes below it. You can sort by amount of CPU%, MEM%, and USER. It's a good idea to monitor how much resources your pipeline is consuming, to not interfere with the jobs of other people. Sometimes you can see that your process consumes more than 100% CPU - it means that the process uses several cores. To save time, we just leave a link to the short [tutorial](https://www.deonsworld.co.za/2012/12/20/understanding-and-using-htop-monitor-system-resources/).
 
-### Data analysis using R
+#### NextFlow Output
+
+When the pipeline will be done, you will have a lot of different files in your `Data_Processed` folder.
+
+-   `work` directory, which contains a lot of temporary files, that most likely you don't want to track either with DVC or with Git. So, you need to add to `.gitignore` and to `.dvcignore` the following pattern:
+
+    `*/work/*`
+
+    Then, it will be a good idea to track the results with DVC and Git
+
+    ``` bash
+    dvc add Data_Processed
+    git add .
+    git commit -m "first nextflow run complete"
+    ```
+
+-   `fastqc` and `multiqc` folders contain quality reports. It's a good idea in general to check how good your samples are
+
+-   `pipeline_info` have information about the execution of the pipeline - timeline, resources consumed, DAG, etc
+
+-   `star_salmon` folder contains gene count tables, BAMs, logs, etc. We are going to use data from this folder for the downstream analysis
+
+-   `.nextflow.log` - the log about the pipeline run
+
+Full information about the output you can find here:
+
+Now we can continue our analysis using R.
+
+## Data analysis using R
+
+#### Launching RStudio
+
+Now, as we have our data pre-processed, mapped, and counted it's time to go one step more and try to analyze it in R. You can of curse pull the count tables to your computer and analyze them locally, but there is a better option - we can run RStudio on the cluster and take advantage of multiple CPUs and more RAM. We run RStudio as a docker container, as it's very convenient and simple. So, to run it create in your `.../YOU_PROJECT_FOLDER/` folder the following file - `run_Rstd_docker.sh`
+
+``` bash
+#!/bin/bash
+ 
+# Description: bash script to start docker Rstudio server
+#    Rstudio docker image: ccribioinf/dockrstudio:4.0.3-v1
+#    docker image is based on tidyverse: rocker/tidyverse:4.0.3
+#
+# Parameters:
+#    new_port (-p ${new_port}:8787) Map TCP port 8787 (default for Rstudio server) in the container to port $new_port on the Docker host.
+#    -e USERID; -e GROUPID - specifying user id and group id for correct file ownership
+#    -e PASSWORD - password for the Rstudio server; default user is 'rstudio', but this can be changed using, for example, -e USER=$(whoami) 
+#    --volume - binding volumes for persistent data storage
+#    --workdir - specifying working directory; this may not work in Rstudio server!
+
+new_port=XXXXX
+RENV_PATHS_CACHE_HOST=/home/USER/bioinf_isilon/Research/resources/renv_cache/  # the path to an renv cache on the host (global) machine
+RENV_PATHS_CACHE_CONTAINER=/renv_cache  # the path to the cache within the container
+# potentially bind to local cache to speed up package installation
+project_name="PROJECT_NAME" # used to name the container
+USER=$(whoami)
+
+docker run --rm \
+  -p ${new_port}:8787 \
+  -e USERID=$(id -u) \
+  -e GROUPID=$(id -g) \
+  -e PASSWORD=test0 \
+  --name ${project_name}_${USER} \
+  -e "RENV_PATHS_CACHE=${RENV_PATHS_CACHE_CONTAINER}" \
+  -v "${RENV_PATHS_CACHE_HOST}:${RENV_PATHS_CACHE_CONTAINER}" \
+  --volume=$(pwd):"/home/rstudio/workspace" \
+  --workdir="/home/rstudio/workspace" \
+  ccribioinf/dockrstudio:4.2.0-v1
+```
+
+Here, it's important that you need to change some variables:
+
+-   `new_port` - change to a value between 1024 and 65536. It must be unique (not overlap with other users). You will use it to access your RStudio session
+
+-   `project_name` - Change to something you like
+
+-   `RENV_PATHS_CACHE_HOST` - you need to define a folder where you want to store your cache. It should be somewhere on the Isilon, **not** in your Home directory on a machine (\~/), and you need to stick to this folder for all your projects.
+
+Sometimes, if you have a huge project, you might want to start the RStudio in a separate folder. It can be that there is a huge amount of small files (like in the `work` folder that NextFlow creates) and they will slow down RStudio substantially. But usually, it's fine.
+
+So, to start RStudio:
+
+-   Run the script that you just created (using `tmux`): `bash run_Rstd_docker.sh`
+
+-   Go to your browser and type in `http://IP.ADDRESS.OF.THESERVER:PORTNUMBER` (for instance `http://10.5.1.157:48911/`)
+
+-   Log in with `rstudio` `test0` credentials
+
+#### Setting up an RProject
+
+When you start a new work, it's advised to create a new project - it will help you to keep your work organized and manage your packages. To do that in the RStudio click "File" \> "New project..." \> "Existing directory" \> locate where you want to have your R code (it's usually a nice idea to have it in `…/YOURPROJECT/RProject` )
+
+We assume that you have experience with R and we want to simply show some good practices on an example of one project. If you want to learn more here are some good tutorials:
+
+\############## Add here links to good tutorials \############
+
+Before we start writing any code, it's a good idea to decide how we are going to control the version of R packages, as our project will require installing a lot of them. One option is to re-install them every time we relaunch our docker image. But this is far from optimal - it takes a lot of time, and also if someone wants to re-run your code after several years, it will be not clear what version of every package was used, which might compromise the analysis. To overcome these challenges we are going to use the `renv` package. To start using it, click *"Tools"* \> *"Project options"* \> *"Environments"* \> put a tick in the *"Use renv with this project".* Now, in our *"Packages"* tab we will have a *"renv"* button. We will see how it works in a moment.
+
+Now, let's create a new R Script file and give it a good, self-describing name (`01_RNAseq_analysis.R`) and write the following code in it:
+
+``` r
+# Project Name: Test project 
+# Project Description: Simulate real case to demonstrate best practices
+# Author: flying fish
+# Date: 2023-08-01
+
+# First time launch - you need to install packages and write that info into renvlock file.
+# To do that, uncomment and run the code below:
+#
+# if (!require("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+# BiocManager::install(c("DESeq2", "apeglm"))
+
+# install.packages("cowplot")
+# install.packages("pheatmap")
+# renv::snapshot()
+
+#### Load libraries ####
+library(DESeq2)
+library(ggplot2)
+library(cowplot)
+library(pheatmap)
+
+#### Setting up environment ####
+resDir <- "~/workspace/RProject/Results"
+if (!dir.exists(resDir)){
+  dir.create(resDir)}
+
+#### Load the data ####
+# and add additional metadata #
+load("~/workspace/Data_Processed/star_salmon/deseq2_qc/deseq2.dds.RData")
+
+#changing names to self-explanatory ones
+dds$sample_type <- as.factor(dds$Group1)
+dds$replica <- as.factor(dds$Group2)
+design(dds) <- as.formula("~replica + sample_type")
+
+#### Filter the data ####
+#remove genes with too few counts
+smallestGroupSize <- 3
+keep <- rowSums(counts(dds) >= 10) >= smallestGroupSize
+dds <- dds[keep,]
+
+#### DESeq2 run ####
+# data transformation - variance stabisisation#
+vsd_filt <- DESeq2::varianceStabilizingTransformation(dds, blind = FALSE) 
+
+# checking PCAs and saving plots
+pca_plot_sample_type <- DESeq2::plotPCA(vsd_filt, intgroup="sample_type") + theme_bw()
+pca_plot_replica <- DESeq2::plotPCA(vsd_filt, intgroup="replica") + theme_bw()
+
+combined_PCA <- ggdraw() +
+                  draw_plot(pca_plot_sample_type, x = 0, y = 0.4, width = 1, height = 0.5) +
+                  draw_plot(pca_plot_replica,     x = 0, y = 0, width = 1, height = 0.5)
+ggsave(filename = file.path(resDir, "PCA_plots.png"))
+
+# Running the DESeq2 
+dds <- estimateSizeFactors(dds) 
+dds <- DESeq2::DESeq(dds)
+res <- results(dds)
+
+#save the result
+saveRDS(dds, file = file.path(resDir, "dds_filtered.Rds"))
+
+resultsNames(dds)
+#perform LFC shrinkage and draw MAplot
+resLFC <- lfcShrink(dds, coef="sample_type_UHR_vs_HBR", type="apeglm")
+MA_plotf <- plotMA(resLFC)
+ggsave(filename = file.path(resDir, "MA_plot.png"))
+
+# Order results by p-value and save to a table
+resOrdered <- res[order(res$pvalue),]
+write.csv2(resOrdered, file = file.path(resDir, "result_table.csv"))
+
+# Heatmap visualization
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:20]
+df <- as.data.frame(colData(dds)[,c("sample_type","replica")])
+diff_genes <- pheatmap(assay(vsd_filt)[select,], cluster_rows=TRUE, show_rownames=FALSE,
+              cluster_cols=FALSE, annotation_col=df)
+
+ggsave(filename = file.path(resDir, "heat_map.png"), diff_genes)
+```
+
+This code is doesn't do a very sophisticated analysis. It just aims to demonstrate some basic concepts:
+
+-   Managing environment - the code will install the necessary libraries and make a snapshot of them. It will be stored in `renv.lock` file and can be restored later. [Here](https://rstudio.github.io/renv/articles/renv.html) is a good short tutorial on renv. You can simply supply your code with this .lock file and other users will manage easily to restore the exact environment that you used.
+
+-   Writing comments to sections. It will make your life easier in the future when you will return to this code after several months.
+
+-   And some small tips:
+
+    -   Using variables as `resDir` so that if you decide to change the folder, you would not need to re-write it everywhere.
+
+    -   Saving intermediate objects as Rds can speed up your work, when you decide to re-run the code, because you would not need to assemble and process your data one more time.
+
+    -   when you work with a lot of different packages, it might become tricky to remember which package each function belongs to, so for this, you can call a function this way `PACKAGENAME::function()`
