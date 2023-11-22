@@ -1,1 +1,42 @@
-site_name: My Docs
+site_name: CCRI Best Practices
+# Theme
+theme:
+  name: material
+  features:
+    - navigation.sections
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+# Navigation
+nav:
+  - Home: 'index.md'
+  - 'User Guide':
+    - 'Writing your docs': 'writing-your-docs.md'
+    - 'Styling your docs': 'styling-your-docs.md'
+  - About:
+    - 'License': 'license.md'
+    - 'Release Notes': 'release-notes.md'
+
+
+
+# Markdown extensions
+markdown_extensions:
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+
