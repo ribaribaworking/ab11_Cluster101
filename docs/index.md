@@ -1,6 +1,17 @@
-# Welcome to our knowledge database
+# Welcome to our knowledge database!
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Hi dear scientist! We are glad to see that you decided to go on the road to an adventure in computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
+
+## Wiki layout:
+
+    mkdocs.yml    # The configuration file.
+    docs/
+        index.md  # The documentation homepage.
+        ...       # Other markdown pages, images and other files.
+
+
+
+
 
 ## Commands
 
@@ -11,17 +22,13 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
 ## Project layout
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
 
 
 # What this tutorial is about?
 
 #draft - rewrite it later
 
-Hi dear scientist! We are glad to see that you decided to go on the road to an adventure in computational biology. We want you to not get lost, and give you some tips and tricks on how to use the cluster and what are the best practices we are trying to use to keep our work organized.
+
 
 We believe that standardization of work processes is good for reproducibility in data science and make it much easier to collaborate on projects.
 
