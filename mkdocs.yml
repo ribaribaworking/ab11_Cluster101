@@ -1,1 +1,38 @@
-site_name: My Docs
+site_name: CCRI Best Practices
+# Theme
+theme:
+  name: material
+  features:
+    - navigation.sections
+  palette:
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+# Navigation
+nav:
+  - Home: 'index.md'
+  - Essentials: 'essentials.md' 
+  - About: 'about.md'
+
+
+
+# Markdown extensions
+markdown_extensions:
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+

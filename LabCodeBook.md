@@ -1,0 +1,5 @@
+2023-11-22
+------------------
+Launch docker with
+>`docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material`
+
