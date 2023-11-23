@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
  
 # Description: bash script to start docker Rstudio server
 #    Rstudio docker image: ccribioinf/dockrstudio:4.0.3-v1
