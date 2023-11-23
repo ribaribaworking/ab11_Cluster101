@@ -48,13 +48,14 @@ Now you need to install "*Remote - SSH*" plugging from the "*Extensions*" tab. A
 
 -   Select the location where you want to store the config (the default is fine)
 
--   Then type in "ssh your_user_name\@machine_ip", where you_user_name is the name that you got from us and IP addresses:
+-   Then type in `ssh your_user_name@machine_ip`, where you_user_name is the name that you got from us and IP addresses is one of those:
 
     | Machine Name | Machine Linux Name  | IP address |
     |--------------|---------------------|------------|
     | Biodirt      | 011SV155.AD.CCRI.AT | 10.5.1.155 |
     | Biohazard    | 011SV157.AD.CCRI.AT | 10.5.1.157 |
     | Biowaste     | 011SV154.AD.CCRI.AT | 10.5.1.154 |
+	| GPU          | 011SV149.AD.CCRI.AT | 10.5.1.149 |
 
 -   Enter your password (if it's the first time you log in to your account, then you have a generic password that you **must** change asap) and hit enter. You might be asked if you trust the connection, or if you want to
 
