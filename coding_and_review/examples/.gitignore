@@ -1,0 +1,9 @@
+analysis
+data
+results
+tmp
+.cache
+.local
+.rstudio_server
+**.log
+**.sif
