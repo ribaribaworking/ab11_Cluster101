@@ -1,0 +1,9 @@
+r-base-core=3.6.3-2
+r-recommended=3.6.3-2
+r-base=3.6.3-2
+libcurl4=7.68.0-1ubuntu2
+libcurl4-openssl-dev=7.68.0-1ubuntu2
+libxml2=2.9.10+dfsg-5
+libxml2-dev=2.9.10+dfsg-5
+libssl-dev=1.1.1f-1ubuntu2
+libssl1.1=1.1.1f-1ubuntu2
