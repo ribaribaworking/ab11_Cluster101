@@ -11,7 +11,7 @@
     - This makes your code faster to read and easier to modify for both the future you and everyone else
 - Use **functions** wherever possible and reuse them
     - They lower the chance of making a typo error when reusing the code in multiple sections
-- Functions are not only about code repetition - functions can be [Unit Tested](./code_testing.md#unit-tests)
+	- Functions are not only about code repetition - functions can be [Unit Tested](./code_testing.md#unit-tests)
 - Use **configs** wherever possible
     - Try to avoid settings parameters and variables, especially the repeating ones, directly in the scripts
     - For example, you can use `YAML`-based config files and parse them [`yq`](https://github.com/mikefarah/yq) inside your shell scripts (see an [example](#parsing-config-files-with-yq) below)
@@ -30,10 +30,9 @@
     - Avoids possible [syntax errors](https://dev.to/documendous/why-you-should-end-your-source-files-with-a-new-line-156g) and makes it easier to `cat` the files
 - **Organize your code** in one way and stick to it (see [Repository Structure](./repository_structure.md))
 - **Develop in branches** and use Pull Request (Merge Request) to *publish* the code (see [GitHub Best Practices](github_best_practices.md) and [Code Review](./code_review.md))
-- Try to follow the Clean Code idea:
-    - [Clean Code for beginners](https://www.freecodecamp.org/news/clean-coding-for-beginners/)
-    - [Clean Code book summary](<https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29>)
-    - The actual (for a lot more information) [Clean Code book](https://github.com/jnguyen095/clean-code/blob/master/Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf)
+- Try to follow the Clean Code idea as much as possible (partially covered in other sections as well):
+    - [Clean Code for beginners](https://www.freecodecamp.org/news/clean-coding-for-beginners/) and [Clean Code book summary](<https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29>)
+	    - The actual (for a lot more information) [Clean Code book](https://github.com/jnguyen095/clean-code/blob/master/Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf)
 
 ## Naming Conventions (functions, variables, scripts)
 
@@ -60,6 +59,7 @@
 - Additional best practices [here](https://medium.com/codecuriosity/shell-script-best-practices-048696404b3a) (PDF version [here](./examples/Shell_Script_Best_Practices_Neuro_Bytes_CodeCuriosity_Oct,_2024_Medium.pdf))
 - Another nice (and short) summary [here](https://bertvv.github.io/cheat-sheets/Bash.html)​
 - Set `set -ueo pipefail` on the top of your bash scripts to capture unset variables, error codes, etc.
+	- Description of the used flags [here](https://gist.github.com/mohanpedala/1e2ff5661761d3abd0385e8223e16425#file-bash_strict_mode-md)
 - Quote variables to prevent word-splitting
 - Don't put passwords and
 - Use `#!/bin/bash -x` or `#!/bin/bash -v` for debugging
@@ -157,8 +157,17 @@
 
 - To parse config `YAML` with `yq`, simply include this in your scripts:
 
-```shell
-DATA_RAW_DIR=$(yq e '.data_raw_dir' "${EXPERIMENT_CONFIG_YAML}")
+```yaml
+name: John Doe  
+age: 30  
+address:  
+ city: New York  
+ zip: 10001
+```
+
+```bash
+yq eval '.name' config.yaml  
+# John Doe
 ```
 
 - Note: Don't install `yq` with `conda`. `conda` only contains a very old version of `yq` (v3.4.3; current is v4.44.5). Installing it directly from [GitHub](https://github.com/mikefarah/yq?tab=readme-ov-file#install) is better.
@@ -212,5 +221,8 @@ wait
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
   "editor.tabSize": 4,
+ -"editor.codeActionsOnSave": {
+    "source.fixAll.shellcheck": "explicit"
+  },
 },
 ```

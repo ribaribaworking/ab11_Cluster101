@@ -242,6 +242,12 @@ closes #14
 - You can click on *Viewed* if you went over the file and you want to hide it temporarily 
 - A simple video example [here](https://www.youtube.com/watch?v=lSnbOtw4izI&ab_channel=CoderDave)
 
+#### PR in VS Code plugin
+
+- VS Code has a plugin for [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) (still under development)
+- You can do everything you can do in GitHub directly in VS Code
+- Check out this [video](https://www.youtube.com/watch?v=DSl-L6B_Qb4&ab_channel=DevLeonardo) for a nice summary
+
 ## GitHub Rules
 
 - GitHub offers a lot of [rules/rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) to help us enforce the agreed *rules* for commit names, branch names, PR, etc.
